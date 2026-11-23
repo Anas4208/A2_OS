@@ -80,18 +80,15 @@ public class ACS {
                 if (p.effectivePriority < best.effectivePriority) {
                     best = p;
                 }
-            } 
-            else if (p.tier2EntryTime != best.tier2EntryTime) {
+            } else if (p.tier2EntryTime != best.tier2EntryTime) {
                 if (p.tier2EntryTime < best.tier2EntryTime) {
                     best = p;
                 }
-            } 
-            else if (p.arrivalTime != best.arrivalTime) {
+            } else if (p.arrivalTime != best.arrivalTime) {
                 if (p.arrivalTime < best.arrivalTime) {
                     best = p;
                 }
-            } 
-            else if (p.id.compareTo(best.id) < 0) {
+            } else if (p.id.compareTo(best.id) < 0) {
                 best = p;
             }
         }
@@ -104,6 +101,51 @@ public class ACS {
     // (update aging first; list tier 2 ordered by effectivePriority, then
     // tier2EntryTime; empty -> [])
     static String queuesState(Queue<Process> tier1, List<Process> tier2, int time) {
-        throw new UnsupportedOperationException("TODO member 4/5: queuesState()");
+        updateAging(tier2, time);
+
+        StringBuilder sb1 = new StringBuilder("Tier1=[");
+        if (tier1 != null && !tier1.isEmpty()) {
+            boolean first = true;
+            for (Process p : tier1) {
+                if (!first) {
+                    sb1.append(", ");
+                }
+                sb1.append(p.id).append("(Remaining: ").append(p.remainingTime).append(", Priority: ")
+                        .append(p.initialPriority).append(")");
+                first = false;
+            }
+        }
+        sb1.append("]");
+
+        StringBuilder sb2 = new StringBuilder("Tier2=[");
+        if (tier2 != null && !tier2.isEmpty()) {
+            List<Process> sortedTier2 = new ArrayList<>(tier2);
+            sortedTier2.sort((a, b) -> {
+                if (a.effectivePriority != b.effectivePriority) {
+                    return Integer.compare(a.effectivePriority, b.effectivePriority);
+                }
+                if (a.tier2EntryTime != b.tier2EntryTime) {
+                    return Integer.compare(a.tier2EntryTime, b.tier2EntryTime);
+                }
+                if (a.arrivalTime != b.arrivalTime) {
+                    return Integer.compare(a.arrivalTime, b.arrivalTime);
+                }
+                return a.id.compareTo(b.id);
+            });
+
+            boolean first = true;
+            for (Process p : sortedTier2) {
+                if (!first) {
+                    sb2.append(", ");
+                }
+                sb2.append(p.id).append("(Remaining: ").append(p.remainingTime).append(", Priority: ")
+                        .append(p.effectivePriority).append(")");
+                first = false;
+            }
+        }
+        sb2.append("]");
+
+        return sb1 + " " + sb2;
     }
+
 }
