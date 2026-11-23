@@ -1,32 +1,53 @@
 import java.util.*;
 
-/*
- * MEMBER 2 - statistics.
- * Holds what one scheduler run produced. SJF and ACS build it with:
- *      new Result("name", processes, timeline)
- * where 'processes' are finished (completionTime and firstStartTime are set) and 'timeline' is the
- * list of printed lines (one per time unit). The constructor is the shared contract - keep it.
- */
-public class Result {
+
+
+
+public class Result{
     String algorithm;
     List<Process> processes;
     List<String> timeline;
     double averageWaiting, averageTurnaround, averageResponse;
 
-    Result(String algorithm, List<Process> processes, List<String> timeline) {
+    Result(String algorithm, List<Process> processes, List<String> timeline){
         this.algorithm = algorithm;
         this.processes = processes;
         this.timeline = timeline;
         calculateStatistics();
     }
 
-    // TODO (member 2): for EVERY process compute and store
-    //      turnaroundTime = completionTime - arrivalTime
-    //      waitingTime    = turnaroundTime  - burstTime       (context-switch time counts as waiting)
-    //      responseTime   = firstStartTime  - arrivalTime
-    // then set averageWaiting, averageTurnaround and averageResponse (sum / number of processes).
-    // Take care of an empty list (no division by zero) and of integer division (use double).
-    void calculateStatistics() {
-        throw new UnsupportedOperationException("TODO member 2: calculateStatistics()");
+
+
+
+    void calculateStatistics(){
+        if(processes ==null || processes.size() == 0){
+            averageWaiting = 0;
+            averageTurnaround = 0;
+            averageResponse = 0;
+            return ;
+        }
+        double totalWaiting = 0;
+        double totalTurnaround = 0;
+        double totalResponse = 0;
+
+        for(int i = 0; i < processes.size(); i++){
+            Process p =processes.get(i);
+            p.turnaroundTime = p.completionTime - p.arrivalTime;
+            p.waitingTime = p.turnaroundTime - p.burstTime;
+            p.responseTime = p.firstStartTime - p.arrivalTime;
+
+            totalWaiting +=p.waitingTime;
+            totalTurnaround += p.turnaroundTime;
+            totalResponse += p.responseTime;
+
+        }
+        int n = processes.size();
+        averageWaiting = totalWaiting /n;
+        averageTurnaround = totalTurnaround/n;
+        averageResponse = totalResponse/n;
+
+
+
     }
+
 }
