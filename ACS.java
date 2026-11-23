@@ -19,50 +19,90 @@ import java.util.*;
 public class ACS {
     private static final int AGING_INTERVAL = 4;
 
-    // TODO (member 4): one loop iteration = one time unit. Keep: tier1 (queue), tier2 (list), current process,
+    // TODO (member 4): one loop iteration = one time unit. Keep: tier1 (queue),
+    // tier2 (list), current process,
     // currentTier, quantumUsed, lastExecuted. Each iteration:
-    //  1. move processes with arrivalTime <= time into tier1 (they are sorted by arrival).
-    //  2. CPU free: take the head of tier1 (quantumUsed = 0); if tier1 is empty take
-    //     chooseHighestPriority(tier2, time) and remove it from tier2.
-    //  3. nothing to run -> IDLE line, time++, forget lastExecuted (no context switch after idle).
-    //  4. lastExecuted != current and contextSwitch > 0 -> add one CONTEXT SWITCH line per time unit; arrivals
-    //     during the switch also join tier1.
-    //  5. IMPORTANT: right after step 4 set lastExecuted = current, otherwise the switch is charged again on
-    //     every following tick of the same process.
-    //  6. set firstStartTime if unset, add a timeline line (use queuesState), remainingTime--, time++,
-    //     quantumUsed++ if in tier 1.
-    //  7. remaining == 0 -> finished, completionTime = time, CPU free.
-    //     else if in tier 1 and quantumUsed == quantum -> tier2EntryTime = time, add to tier2, CPU free.
-    //     (a process in tier 2 just keeps running: it is non-preemptive)
-    //  8. return new Result("Adaptive Container Scheduler (Q=" + quantum + ", CS=" + contextSwitch + ")", ...)
+    // 1. move processes with arrivalTime <= time into tier1 (they are sorted by
+    // arrival).
+    // 2. CPU free: take the head of tier1 (quantumUsed = 0); if tier1 is empty take
+    // chooseHighestPriority(tier2, time) and remove it from tier2.
+    // 3. nothing to run -> IDLE line, time++, forget lastExecuted (no context
+    // switch after idle).
+    // 4. lastExecuted != current and contextSwitch > 0 -> add one CONTEXT SWITCH
+    // line per time unit; arrivals
+    // during the switch also join tier1.
+    // 5. IMPORTANT: right after step 4 set lastExecuted = current, otherwise the
+    // switch is charged again on
+    // every following tick of the same process.
+    // 6. set firstStartTime if unset, add a timeline line (use queuesState),
+    // remainingTime--, time++,
+    // quantumUsed++ if in tier 1.
+    // 7. remaining == 0 -> finished, completionTime = time, CPU free.
+    // else if in tier 1 and quantumUsed == quantum -> tier2EntryTime = time, add to
+    // tier2, CPU free.
+    // (a process in tier 2 just keeps running: it is non-preemptive)
+    // 8. return new Result("Adaptive Container Scheduler (Q=" + quantum + ", CS=" +
+    // contextSwitch + ")", ...)
     // Throw IllegalArgumentException if quantum <= 0.
     static Result runACS(List<Process> input, int quantum, int contextSwitch) {
         throw new UnsupportedOperationException("TODO member 4: runACS()");
     }
 
     // TODO (member 4): for every process in tier2 set
-    //      effectivePriority = initialPriority - (max(0, time - tier2EntryTime) / AGING_INTERVAL)
+    // effectivePriority = initialPriority - (max(0, time - tier2EntryTime) /
+    // AGING_INTERVAL)
     static void updateAging(List<Process> tier2, int time) {
-        
-        //Null/empty safety
-        if (tier2 == null) return;
 
-        for(Process p : tier2) {
+        // Null/empty safety
+        if (tier2 == null)
+            return;
+
+        for (Process p : tier2) {
             int waited = Math.max(0, time - p.tier2EntryTime);
 
             p.effectivePriority = p.initialPriority - (waited / AGING_INTERVAL);
         }
     }
 
-    // TODO (member 4): call updateAging first, then return the process with the smallest effectivePriority.
+    // TODO (member 4): call updateAging first, then return the process with the
+    // smallest effectivePriority.
     // Tie: the one that entered tier 2 earlier.
     static Process chooseHighestPriority(List<Process> tier2, int time) {
-        throw new UnsupportedOperationException("TODO member 4: chooseHighestPriority()");
+        updateAging(tier2, time);
+
+        if (tier2.isEmpty())
+            return null;
+
+        Process best = tier2.get(0);
+
+        for (Process p : tier2) {
+            if (p.effectivePriority != best.effectivePriority) {
+                if (p.effectivePriority < best.effectivePriority) {
+                    best = p;
+                }
+            } 
+            else if (p.tier2EntryTime != best.tier2EntryTime) {
+                if (p.tier2EntryTime < best.tier2EntryTime) {
+                    best = p;
+                }
+            } 
+            else if (p.arrivalTime != best.arrivalTime) {
+                if (p.arrivalTime < best.arrivalTime) {
+                    best = p;
+                }
+            } 
+            else if (p.id.compareTo(best.id) < 0) {
+                best = p;
+            }
+        }
+
+        return best;
     }
 
     // TODO (member 4 or 5): return the queues as text for the timeline lines, e.g.
-    //      Tier1=[P2 rem=7, P3 rem=2] Tier2=[P1 rem=1 priority=2]
-    // (update aging first; list tier 2 ordered by effectivePriority, then tier2EntryTime; empty -> [])
+    // Tier1=[P2 rem=7, P3 rem=2] Tier2=[P1 rem=1 priority=2]
+    // (update aging first; list tier 2 ordered by effectivePriority, then
+    // tier2EntryTime; empty -> [])
     static String queuesState(Queue<Process> tier1, List<Process> tier2, int time) {
         throw new UnsupportedOperationException("TODO member 4/5: queuesState()");
     }
