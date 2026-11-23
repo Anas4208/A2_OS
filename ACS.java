@@ -43,7 +43,15 @@ public class ACS {
     // TODO (member 4): for every process in tier2 set
     //      effectivePriority = initialPriority - (max(0, time - tier2EntryTime) / AGING_INTERVAL)
     static void updateAging(List<Process> tier2, int time) {
-        throw new UnsupportedOperationException("TODO member 4: updateAging()");
+        
+        //Null/empty safety
+        if (tier2 == null) return;
+
+        for(Process p : tier2) {
+            int waited = Math.max(0, time - p.tier2EntryTime);
+
+            p.effectivePriority = p.initialPriority - (waited / AGING_INTERVAL);
+        }
     }
 
     // TODO (member 4): call updateAging first, then return the process with the smallest effectivePriority.
