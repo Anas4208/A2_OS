@@ -1,8 +1,5 @@
 import java.util.*;
 
-
-
-
 public class Result{
     String algorithm;
     List<Process> processes;
@@ -15,9 +12,6 @@ public class Result{
         this.timeline = timeline;
         calculateStatistics();
     }
-
-
-
 
     void calculateStatistics(){
         if(processes ==null || processes.size() == 0){
@@ -45,8 +39,6 @@ public class Result{
         averageWaiting = totalWaiting /n;
         averageTurnaround = totalTurnaround/n;
         averageResponse = totalResponse/n;
-
-
 
     }
 

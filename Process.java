@@ -1,6 +1,5 @@
 import java.util.*;
 
-
 public class Process {
     String id;
     int arrivalTime, burstTime, initialPriority;
@@ -18,7 +17,6 @@ public class Process {
         this.remainingTime = burst;
         this.effectivePriority = priority;
     }
-
 
     Process copy() {
             return new Process(id, arrivalTime, burstTime, initialPriority);

@@ -1,10 +1,5 @@
 import java.util.*;
 
-/* 
- *   Test case 1 (CS=0):  finish P1=4 P2=13 P3=6   waiting 0,5,1 (avg 2.00)  turnaround 4,12,3 (avg 6.33)  response 0,5,1 (avg 2.00)
- *   Test case 2 (CS=1):  finish P1=5 P2=17 P3=10  waiting 0,10,2 (avg 4.00) turnaround 5,16,6 (avg 9.00)  response 0,10,2 (avg 4.00)
- *                        (context switches at t=5 and t=10)
- */
 public class SJF {
 
     static Process findShortestProcess(List<Process> processes, int time, Process preferred) {
@@ -34,6 +29,7 @@ public class SJF {
         int time = 0;
         int finishedProcess = 0;
         Process lastProcess = null;
+        boolean justSwitched = false;
 
         while (finishedProcess < processes.size()) {
 
@@ -46,12 +42,12 @@ public class SJF {
                 continue;
             }
 
-            if (lastProcess != null && selected != lastProcess && contextSwitch > 0) {
+            if (lastProcess != null && selected != lastProcess && contextSwitch > 0 && !justSwitched) {
                 for (int i = 0; i < contextSwitch; i++) {
                     timeline.add("t=" + time + " CONTEXT SWITCH (" + lastProcess.id + " -> " + selected.id + ")");
                     time++;
                 }
-                lastProcess = selected;
+                justSwitched = true;
                 continue;
             }
 
@@ -60,6 +56,7 @@ public class SJF {
             }
 
             timeline.add("t=" + time + " CPU: " + selected.id + " (remaining: " + selected.remainingTime + ")");
+            justSwitched = false;
             selected.remainingTime--;
             time++;
             lastProcess = selected;
