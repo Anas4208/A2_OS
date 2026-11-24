@@ -51,7 +51,7 @@ public class ACS {
 
             if(lastExecuted != null && lastExecuted != current && contextSwitch > 0){
                 for(int cs = 0; cs < contextSwitch; cs++){
-                    timeline.add("t=" + time + ": CONTEXT SWITCH (" + lastExecuted.id + "->" + current.id + ")");
+                    timeline.add("t=" + time + ": CONTEXT SWITCH (" + lastExecuted.id + "->" + current.id + ") | " + queuesState(tier1, tier2, time));
                     time++;
                     while(nextArrivalIdx < processes.size() && processes.get(nextArrivalIdx).arrivalTime <= time){
                         tier1.add(processes.get(nextArrivalIdx));
